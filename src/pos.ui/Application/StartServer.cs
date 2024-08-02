@@ -8,6 +8,7 @@ namespace Pos.UI.Application
 	using Microsoft.OData.ModelBuilder;
 	using Pos.UI.DataLayer;
 	using Pos.UI.Models;
+	using Pos.UI.OpenApi;
 	using Pos.UI.Queries;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -21,10 +22,13 @@ namespace Pos.UI.Application
 				.AddPosDataConnection(builder.Configuration)
 				.AddQueries()
 				.AddControllers()
+				.AddNewtonsoftJson()
 				.AddOData(
 					options => options
 					 	.EnableQueryFeatures()
-						.AddRouteComponents("api", GetEdmModel()));
+						.AddRouteComponents("api", GetEdmModel()))
+				.Services
+				.AddPosOpenApiDocument();
 			var app = builder.Build();
 			await new Migrations(app.Services).Apply(cancellationToken);
 			if (!app.Environment.IsDevelopment())
@@ -32,6 +36,7 @@ namespace Pos.UI.Application
 				app.UseHsts();
 			}
 
+			app.AddPosSwaggerUI();
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.MapControllers();

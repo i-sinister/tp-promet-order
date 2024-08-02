@@ -7,12 +7,18 @@
 		<ImplicitUsings>false</ImplicitUsings>
 		<RootNamespace>Pos.UI</RootNamespace>
 		<Executable>true</Executable>
+		<!-- necessary for openApi documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="linq2db" Version="5.4.1" />
 		<PackageReference Include="linq2db.AspNet" Version="5.4.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.5" />
+		<PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
 	</ItemGroup>
