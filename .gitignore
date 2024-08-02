@@ -1,0 +1,27 @@
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+Bin/
+obj/
+Obj/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# Click-Once directory
+publish/
+
+# Visual Studio cache files
+*.[Cc]ache
+
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
+
+/node_modules
