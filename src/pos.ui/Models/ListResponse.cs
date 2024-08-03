@@ -5,6 +5,9 @@ namespace Pos.UI.Models
 
 	public class ListResponse<TItem>
 	{
+		/// <summary>
+		/// Query result
+		/// </summary>
 		[NotNull]
 		public IQueryable<TItem> Items { get; init; } = default!;
 	}

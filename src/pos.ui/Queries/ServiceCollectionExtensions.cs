@@ -10,6 +10,5 @@ namespace Pos.UI.Queries
 				.AddTransient<ProvidersQuery>()
 				.AddTransient<OrdersQuery>()
 				.AddTransient<OrderDetailsQuery>();
-
 	}
 }

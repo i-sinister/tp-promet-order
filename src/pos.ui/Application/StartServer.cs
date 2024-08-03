@@ -6,6 +6,7 @@ namespace Pos.UI.Application
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.OData.Edm;
 	using Microsoft.OData.ModelBuilder;
+	using Pos.UI.Commands;
 	using Pos.UI.DataLayer;
 	using Pos.UI.Models;
 	using Pos.UI.OpenApi;
@@ -21,6 +22,7 @@ namespace Pos.UI.Application
 			builder.Services
 				.AddPosDataConnection(builder.Configuration)
 				.AddQueries()
+				.AddCommands()
 				.AddControllers()
 				.AddNewtonsoftJson()
 				.AddOData(

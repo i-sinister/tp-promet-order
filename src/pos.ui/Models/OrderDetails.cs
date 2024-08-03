@@ -4,6 +4,6 @@ namespace Pos.UI.Models
 
 	public class OrderDetails : OrderInfo
 	{
-		public OrderItem[] Items { get; init; } = Array.Empty<OrderItem>();
+		public OrderItem[] Items { get; init; } = [];
 	}
 }

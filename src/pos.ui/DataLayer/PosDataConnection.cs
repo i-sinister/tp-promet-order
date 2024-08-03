@@ -25,6 +25,9 @@ namespace Pos.UI.DataLayer
 			return this;
 		}
 
+		public Task<DataConnectionTransaction> BeginTransaction(CancellationToken cancellallationToken) =>
+			BeginTransactionAsync(cancellallationToken);
+
 		public IQueryable<OrderItem> GetOrderItems(CancellationToken cancellationToken) =>
 			this.GetTable<OrderItem>();
 
