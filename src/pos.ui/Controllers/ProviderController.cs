@@ -49,6 +49,11 @@
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Create([FromBody]Models.CreateProviderRequest provider, CancellationToken cancellationToken)
 		{
+			if (!await this.Validate(provider, default, default, cancellationToken))
+			{
+				return ValidationProblem();
+			}
+
 			var query = HttpContext.RequestServices.GetRequiredService<CreateProviderCommand>();
 			var providerID = await query.Execute(new Commands.CreateProviderRequest(provider), cancellationToken);
 			return Created((string?)null, providerID);
@@ -69,6 +74,11 @@
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Update(int providerID, [FromBody]Models.UpdateProviderRequest provider, CancellationToken cancellationToken)
 		{
+			if (!await this.Validate(provider, nameof(providerID), providerID, cancellationToken))
+			{
+				return ValidationProblem();
+			}
+
 			var query = HttpContext.RequestServices.GetRequiredService<UpdateProviderCommand>();
 			var updated = await query.Execute(new Commands.UpdateProviderRequest(providerID, provider), cancellationToken);
 			return updated ? Ok() : NotFound();
@@ -81,15 +91,21 @@
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		[HttpDelete]
-		[Route("{orderID}", Name = "provider_delete")]
+		[Route("{providerID}", Name = "provider_delete")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Delete(int providerID, CancellationToken cancellationToken)
 		{
+			var request = new DeleteProviderRequest(providerID);
+			if (!await this.Validate(request, default, default, cancellationToken))
+			{
+				return ValidationProblem();
+			}
+
 			var query = HttpContext.RequestServices.GetRequiredService<DeleteProviderCommand>();
-			var deleted = await query.Execute(new DeleteProviderRequest(providerID), cancellationToken);
+			var deleted = await query.Execute(request, cancellationToken);
 			return deleted ? NoContent() : NotFound();
 		}
 	}

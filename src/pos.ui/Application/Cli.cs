@@ -1,3 +1,4 @@
+[assembly: Microsoft.Extensions.Localization.RootNamespace("Pos.UI")]
 namespace Pos.UI.Application
 {
 	using System.CommandLine;

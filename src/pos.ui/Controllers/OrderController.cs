@@ -66,6 +66,11 @@ namespace Pos.UI.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Create([FromBody]Models.CreateOrderRequest order, CancellationToken cancellationToken)
 		{
+			if (!await this.Validate(order, default, default, cancellationToken))
+			{
+				return ValidationProblem();
+			}
+
 			var query = HttpContext.RequestServices.GetRequiredService<CreateOrderCommand>();
 			var orderID = await query.Execute(new Commands.CreateOrderRequest(order), cancellationToken);
 			return Created((string?)null, orderID);
@@ -86,6 +91,11 @@ namespace Pos.UI.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Update(int orderID, [FromBody]Models.UpdateOrderRequest order, CancellationToken cancellationToken)
 		{
+			if (!await this.Validate(order, nameof(orderID), orderID, cancellationToken))
+			{
+				return ValidationProblem();
+			}
+
 			var query = HttpContext.RequestServices.GetRequiredService<UpdateOrderCommand>();
 			var updated = await query.Execute(new Commands.UpdateOrderRequest(orderID, order), cancellationToken);
 			return updated ? Ok() : NotFound();

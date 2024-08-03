@@ -18,5 +18,13 @@ namespace Pos.UI.DataLayer
 		IQueryable<Order> GetOrders(CancellationToken cancellationToken);
 
 		IQueryable<OrderItem> GetOrderItems(CancellationToken cancellationToken);
+
+		Task<bool> DoesOrderExist(int orderID, int providerID, string number, CancellationToken cancellationToken);
+
+		Task<bool> DoesProviderExist(int providerID, CancellationToken cancellationToken);
+
+		Task<bool> DoesProviderExist(int providerID, string name, CancellationToken cancellationToken);
+
+		Task<bool> IsProviderUsed(int providerID, CancellationToken cancellationToken);
 	}
 }

@@ -5,7 +5,7 @@ namespace Pos.UI.Models
 	/// <summary>
 	/// Order information
 	/// </summary>
-	public class UpdateOrderRequest : EditableOrderProperties
+	public class UpdateOrderRequest : EditableOrderProperties, IOrderDetails<UpdateOrderItem>
 	{
 		/// <summary>
 		/// Order items

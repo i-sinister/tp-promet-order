@@ -6,11 +6,13 @@ namespace Pos.UI.Application
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.OData.Edm;
 	using Microsoft.OData.ModelBuilder;
+	using Newtonsoft.Json.Serialization;
 	using Pos.UI.Commands;
 	using Pos.UI.DataLayer;
 	using Pos.UI.Models;
 	using Pos.UI.OpenApi;
 	using Pos.UI.Queries;
+	using Pos.UI.Validation;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -23,6 +25,8 @@ namespace Pos.UI.Application
 				.AddPosDataConnection(builder.Configuration)
 				.AddQueries()
 				.AddCommands()
+				.AddModelValidation(new CamelCaseNamingStrategy())
+				.AddLocalization(o => o.ResourcesPath = "Resources")
 				.AddControllers()
 				.AddNewtonsoftJson()
 				.AddOData(

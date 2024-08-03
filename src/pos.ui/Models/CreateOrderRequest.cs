@@ -2,11 +2,10 @@ namespace Pos.UI.Models
 {
 	using System.ComponentModel.DataAnnotations;
 
-
 	/// <summary>
 	/// Order information
 	/// </summary>
-	public class CreateOrderRequest : EditableOrderProperties
+	public class CreateOrderRequest : EditableOrderProperties, IOrderDetails<CreateOrderItem>
 	{
 		/// <summary>
 		/// Order items
