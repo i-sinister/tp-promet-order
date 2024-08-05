@@ -47,6 +47,7 @@
 		[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Create([FromBody]Models.CreateProviderRequest provider, CancellationToken cancellationToken)
 		{
 			if (!await this.Validate(provider, default, default, cancellationToken))
@@ -72,6 +73,7 @@
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Update(int providerID, [FromBody]Models.UpdateProviderRequest provider, CancellationToken cancellationToken)
 		{
 			if (!await this.Validate(provider, nameof(providerID), providerID, cancellationToken))
@@ -96,6 +98,7 @@
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Delete(int providerID, CancellationToken cancellationToken)
 		{
 			var request = new DeleteProviderRequest(providerID);

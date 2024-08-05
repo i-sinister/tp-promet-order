@@ -13,6 +13,8 @@ namespace Pos.UI.DataLayer
 
 		Task<DataConnectionTransaction> BeginTransaction(CancellationToken cancellationToken);
 
+		Task Commit(CancellationToken cancellationToken);
+
 		IQueryable<Provider> GetProviders(CancellationToken cancellationToken);
 
 		IQueryable<Order> GetOrders(CancellationToken cancellationToken);

@@ -22,14 +22,13 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
 			var provider =
 				new Models.Provider
 				{
 					Name = request.Provider.Name,
 				};
 			var providerID = await dataConnection.InsertWithInt32IdentityAsync(provider, token: cancellationToken);
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return providerID;
 		}
 	}

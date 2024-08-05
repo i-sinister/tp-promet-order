@@ -23,14 +23,12 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
-
 			// we need to remove only providers, because order deletion is handled by sqlite
 			var deletedProviderCount = await dataConnection
 				.GetProviders(cancellationToken)
 				.Where(order => order.ID == request.ProviderID)
 				.DeleteAsync(token: cancellationToken);
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return 0 < deletedProviderCount;
 		}
 	}

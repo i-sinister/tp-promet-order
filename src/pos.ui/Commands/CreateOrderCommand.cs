@@ -23,7 +23,6 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
 			var order =
 				new Order
 				{
@@ -45,7 +44,7 @@ namespace Pos.UI.Commands
 				await dataConnection.InsertWithInt32IdentityAsync(item, token: cancellationToken);
 			}
 
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return orderID;
 		}
 	}

@@ -64,6 +64,7 @@ namespace Pos.UI.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Create([FromBody]Models.CreateOrderRequest order, CancellationToken cancellationToken)
 		{
 			if (!await this.Validate(order, default, default, cancellationToken))
@@ -89,6 +90,7 @@ namespace Pos.UI.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Update(int orderID, [FromBody]Models.UpdateOrderRequest order, CancellationToken cancellationToken)
 		{
 			if (!await this.Validate(order, nameof(orderID), orderID, cancellationToken))
@@ -113,6 +115,7 @@ namespace Pos.UI.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[Transaction]
 		public async Task<IActionResult> Delete(int orderID, CancellationToken cancellationToken)
 		{
 			var query = HttpContext.RequestServices.GetRequiredService<DeleteOrderCommand>();

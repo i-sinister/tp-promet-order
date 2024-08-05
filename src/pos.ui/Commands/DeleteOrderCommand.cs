@@ -23,14 +23,12 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
-
 			// we need to remove only orders, because item deletion is handled by sqlite
 			var deletedOrderCount = await dataConnection
 				.GetOrders(cancellationToken)
 				.Where(order => order.ID == request.OrderID)
 				.DeleteAsync(token: cancellationToken);
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return 0 < deletedOrderCount;
 		}
 	}

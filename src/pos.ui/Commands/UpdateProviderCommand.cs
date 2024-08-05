@@ -22,7 +22,6 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
 			var provider = await dataConnection.GetProviders(cancellationToken)
 				.FirstOrDefaultAsync(o => request.ProviderID == o.ID, cancellationToken);
 			if (provider is null)
@@ -32,7 +31,7 @@ namespace Pos.UI.Commands
 
 			provider.Name = request.Provider.Name;
 			await dataConnection.UpdateAsync(provider, token: cancellationToken);
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return true;
 		}
 

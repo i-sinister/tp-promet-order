@@ -24,7 +24,6 @@ namespace Pos.UI.Commands
 				throw new ArgumentNullException(nameof(request));
 			}
 
-			await using var transaction = await dataConnection.BeginTransaction(cancellationToken);
 			var order = await dataConnection.GetOrders(cancellationToken)
 				.FirstOrDefaultAsync(o => request.OrderID == o.ID, cancellationToken);
 			if (order is null)
@@ -70,7 +69,7 @@ namespace Pos.UI.Commands
 				}
 			}
 
-			await transaction.CommitAsync(cancellationToken);
+			await dataConnection.Commit(cancellationToken);
 			return true;
 		}
 	}
