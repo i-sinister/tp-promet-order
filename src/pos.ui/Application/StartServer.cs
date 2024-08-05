@@ -44,6 +44,7 @@ namespace Pos.UI.Application
 
 			app.AddPosSwaggerUI();
 			app.UseHttpsRedirection();
+			app.UseCors(x => x.WithOrigins("http://localhost:4200"));
 			app.UseStaticFiles();
 			app.MapControllers();
 			await app.RunAsync();

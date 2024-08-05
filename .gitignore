@@ -24,4 +24,7 @@ publish/
 # but keep track of directories ending in .cache
 !*.[Cc]ache/
 
-/node_modules
+# angular files
+node_modules/
+.angular/
+dist/
