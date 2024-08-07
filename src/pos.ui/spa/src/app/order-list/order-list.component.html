@@ -1,0 +1,138 @@
+<table class='table table-striped'>
+  <thead>
+    <tr>
+      <th>
+        Number
+        <button type="button" class="btn btn-primary btn-floating" (click)="toggleSort(number)">
+          <i class="bi"
+           [class.bi-arrow-down-up]="number.sorting == SD.None"
+           [class.bi-sort-up]="number.sorting == SD.Asc"
+           [class.bi-sort-down]="number.sorting == SD.Desc"
+           ></i>
+        </button>
+      </th>
+      <th>
+        Date
+        <button type="button" class="btn btn-primary btn-floating" (click)="toggleSort(date)">
+          <i class="bi"
+           [class.bi-arrow-down-up]="date.sorting == SD.None"
+           [class.bi-sort-up]="date.sorting == SD.Asc"
+           [class.bi-sort-down]="date.sorting == SD.Desc"
+           ></i>
+        </button>
+      </th>
+      <th>
+        Provider Name
+        <button type="button" class="btn btn-primary btn-floating" (click)="toggleSort(provider)">
+          <i class="bi"
+           [class.bi-arrow-down-up]="provider.sorting == SD.None"
+           [class.bi-sort-up]="provider.sorting == SD.Asc"
+           [class.bi-sort-down]="provider.sorting == SD.Desc"
+           ></i>
+        </button>
+      </th>
+      <th></th>
+    </tr>
+    <tr class="filters">
+      <th>
+        <div class="btn-toolbar input-group row" role="toolbar">
+          <input type="text"
+          class="form-control form-control-sm"
+          [formControl]="numberFilter" matInput [matAutocomplete]="numberAutocomplete"/>
+          <mat-autocomplete #numberAutocomplete="matAutocomplete">
+            <mat-option *ngFor="let number of numberOptions | async" [value]="number">{{number}}</mat-option>
+          </mat-autocomplete>
+        </div>
+     </th>
+      <th>
+        <div class="btn-toolbar input-group row" role="toolbar">
+          <input type="date" id="dateFrom" class="form-control form-control-sm"
+            aria-label="from" placeholder="from"
+            [ngModel]="date.from | date:'yyyy-MM-dd'" (ngModelChange)="date.from = $event" />
+          <input type="date" id="dateTo"class="form-control form-control-sm"
+            aria-label="to" placeholder="to"
+            [ngModel]="date.to | date:'yyyy-MM-dd'" (ngModelChange)="date.to = $event" />
+        </div>
+      </th>
+      <th>
+        <div class="btn-toolbar input-group row" role="toolbar">
+          <input type="text"
+          class="form-control form-control-sm"
+          [formControl]="providerFilter" matInput [matAutocomplete]="providerAutocomplete"/>
+          <mat-autocomplete #providerAutocomplete="matAutocomplete">
+            <mat-option *ngFor="let provider of providerOptions | async" [value]="provider">{{provider}}</mat-option>
+          </mat-autocomplete>
+        </div>
+      </th>
+      <th>
+        <div class="btn-toolbar input-group" role="toolbar">
+          <button type="button" class="btn btn-primary btn-floating" title="Apply"
+              (click)="loadOrders()">
+            <i class="bi bi-search"></i>
+          </button>
+          <button type="button" class="btn btn-primary btn-floating" title="Clear"
+              (click)="clearFilters()" >
+            <i class="bi bi-dash-circle"></i>
+          </button>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngIf="is_loading">
+      <td colspan="4" style="text-align: center;">[loading orders]</td>
+    </tr>
+    <tr *ngIf="!is_loading && !orders?.length">
+      <td colspan="4" style="text-align: center;">[no orders found]</td>
+    </tr>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.number }}</td>
+      <td>{{ order.date }}</td>
+      <td>{{ order.providerName }}</td>
+      <td>
+        <button type="button" class="btn btn-primary btn-floating" title="Remove order">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4" class="order-list-operations">
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+          <div class="input-group">
+            <label for="pageSize">Page size:</label>
+            <input type="number" id="pageSize"
+              (change)="loadOrders()" [(ngModel)]="pageSize"
+              class="form-control" style="min-width: 5em;"
+              placeholder="Page size" aria-label="Page size" min="1" max="10" />
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary btn-floating" title="First page"
+              (click)="goToFirstPage()">
+              <i class="bi bi-arrow-left-circle-fill"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-floating" title="Prev page"
+              (click)="goToPrevPage()">
+              <i class="bi bi-arrow-left-circle"></i>
+            </button>
+            <input type="number" title="Page number" class="form-control" style="width: 6em;"
+              min="1" (change)="loadOrders()" [(ngModel)]="currentPage" />
+            <span class="btn"> of {{pageCount}}</span>
+            <button type="button" class="btn btn-primary btn-floating" title="Next page"
+              (click)="goToNextPage()">
+              <i class="bi bi-arrow-right-circle"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-floating" title="Last page"
+              (click)="goToLastPage()">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+            </button>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary">
+              <i class="bi bi-plus"></i>Add
+            </button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
