@@ -2,6 +2,7 @@ namespace Pos.UI.Application
 {
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.OData;
+	using Microsoft.AspNetCore.OData.NewtonsoftJson;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.OData.Edm;
@@ -28,11 +29,12 @@ namespace Pos.UI.Application
 				.AddModelValidation(new CamelCaseNamingStrategy())
 				.AddLocalization(o => o.ResourcesPath = "Resources")
 				.AddControllers()
-				.AddNewtonsoftJson()
 				.AddOData(
 					options => options
 					 	.EnableQueryFeatures()
 						.AddRouteComponents("api", GetEdmModel()))
+				.AddNewtonsoftJson()
+				.AddODataNewtonsoftJson()
 				.Services
 				.AddPosOpenApiDocument();
 			var app = builder.Build();
@@ -53,7 +55,8 @@ namespace Pos.UI.Application
 
 		public static IEdmModel GetEdmModel()
 		{
-			var builder = new ODataConventionModelBuilder();
+			var builder = new ODataConventionModelBuilder()
+				.EnableLowerCamelCase();
 			builder
 				.EntitySet<Provider>("Providers")
 				.EntityType

@@ -22,6 +22,7 @@
 		<PackageReference Include="linq2db.AspNet" Version="5.4.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.5" />
+		<PackageReference Include="Microsoft.AspNetCore.OData.NewtonsoftJson" Version="8.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.19" />
 		<PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />

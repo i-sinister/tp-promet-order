@@ -32,7 +32,7 @@
 		{
 			var query = HttpContext.RequestServices.GetRequiredService<ProvidersQuery>();
 			var items = await query.Execute(cancellationToken);
-			var result = odataOptions.ApplyTo(items).ToListResult();
+			var result = await items.Apply(odataOptions, cancellationToken);
 			return Ok(result);
 		}
 

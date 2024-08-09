@@ -31,7 +31,7 @@ namespace Pos.UI.Controllers
 		{
 			var query = HttpContext.RequestServices.GetRequiredService<OrdersQuery>();
 			var items = await query.Execute(cancellationToken);
-			var result = odataOptions.ApplyTo(items).ToListResult();
+			var result = await items.Apply(odataOptions, cancellationToken);
 			return Ok(result);
 		}
 
