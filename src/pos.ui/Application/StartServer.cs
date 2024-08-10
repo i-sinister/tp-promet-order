@@ -50,6 +50,7 @@ namespace Pos.UI.Application
 				policyBuilder => policyBuilder
 					.WithOrigins("http://localhost:4200")
 					.AllowAnyMethod()
+					.AllowAnyHeader()
 			);
 			app.UseStaticFiles();
 			app.MapControllers();

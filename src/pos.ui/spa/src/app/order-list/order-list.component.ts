@@ -2,7 +2,7 @@ import { Component, Inject, Input, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   tap, map, startWith, debounceTime, distinctUntilChanged, switchMap, catchError
 } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import * as moment from 'moment';
 
 
 import { EventsService } from '../events.service';
-import { OrderListResponse, OrderInfo } from '../models/orderInfo';
+import { OrderListResponse, OrderInfo } from '../models/order';
 import { AutoCompleteResponse } from '../models/autocomplete';
 
 enum SortDirection {

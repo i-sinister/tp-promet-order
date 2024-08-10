@@ -1,0 +1,97 @@
+<div class="container row" [formGroup]="formOrder">
+  <div class="col-md-2">
+  </div>
+  <div class="col-md-1">
+    <label class="form-label">ID:</label>
+    <input type="text" readonly class="form-control" id="id" [value]="orderID">
+  </div>
+  <div class="col-md-2">
+    <label for="number" class="form-label">Number:</label>
+    <input type="text" id="number" class="form-control"
+     required formControlName="number">
+  </div>
+  <div class="col-md-2">
+    <label for="date" id="date" class="form-label">Date:</label>
+    <input type="date" class="form-control"
+      required formControlName="date" />
+  </div>
+  <div class="col-md-2">
+    <label for="provider" class="form-label">Provider:</label>
+    <select id="provider" class="form-control" required formControlName="providerID">
+      <option *ngFor="let provider of providers" [value]="provider.id">{{provider.name}}</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-2">
+  </div>
+  <div class="col-7">
+    <table class='table table-striped'>
+      <thead>
+        <title>Items:</title>
+        <tr>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+          <th></th>
+        </tr>
+        <tr [formGroup]="formItem">
+          <td>
+            <input type="text" class="form-control" formControlName="name"
+              required minlength="1" maxlength="128" pattern="^[a-zA-Z0-9 \-_]+$">
+          </td>
+          <td>
+            <input type="number" class="form-control" formControlName="quantity"
+              required min="0" max="9999">
+          </td>
+          <td>
+            <input type="text" class="form-control" formControlName="unit"
+              required minlength="1" maxlength="128" pattern="^[a-zA-Z0-9 \-_]+$">
+            </td>
+          <td>
+            <button type="button" class="btn btn-primary btn-floating" title="Add"
+              [disabled]="formItem.invalid" (click)="addItem()">
+              <i class="bi bi-plus"></i>
+            </button>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unit }}</td>
+          <td>
+            <button type="button" class="btn btn-primary btn-floating" title="Remove order" (click)="removeItem(item)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-2">
+  </div>
+  <div class="col-7">
+    <div class="btn-toolbar justify-content-between" role="toolbar">
+      <div class="btn-group" role="group">
+        <a [routerLink]="['/']" class="btn btn-outline-primary">
+          <i class="bi bi-arrow-left-square"></i> To order list
+        </a>
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary"
+          [disabled]="formOrder.invalid" (click)="saveOrder()">
+          <i class="bi bi-save"></i> {{ 0 == orderID ? 'Save' : 'Update'}}
+        </button>
+        <button type="button" class="btn btn-danger" title="Remove order"
+         [disabled]="0 == orderID" (click)="removeOrder()">
+          <i class="bi bi-trash"></i> Remove
+        </button>
+    </div>
+  </div>
+  <div class="col-md-3">
+  </div>
+</div>
