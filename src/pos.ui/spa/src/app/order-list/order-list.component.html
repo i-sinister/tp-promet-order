@@ -90,7 +90,7 @@
       <td>{{ order.date }}</td>
       <td>{{ order.providerName }}</td>
       <td>
-        <button type="button" class="btn btn-primary btn-floating" title="Remove order">
+        <button type="button" class="btn btn-primary btn-floating" title="Remove order" (click)="removeOrder(order)">
           <i class="bi bi-trash"></i>
         </button>
       </td>

@@ -268,6 +268,25 @@ export class OrderListComponent implements OnInit {
     this.loadOrders();
   }
 
+  public removeOrder(order: OrderInfo) {
+    if (!confirm(`Are you sure you want to delete order '${order.number}'`)) {
+      return;
+    }
+
+    this.events.add(`reming order ${order.id}`);
+    return this.http
+      .delete(`${this.baseUrl}api/orders/${order.id}`)
+      .subscribe({
+        next: _ => {
+          this.events.add(`orders ${order.id} removed`);
+          this.loadOrders();
+        },
+        error: _ => {
+          this.events.add(`orders ${order.id} could not be removed`);
+        }
+      });
+  }
+
   private buildOrderListOptions() : [options: { params?: HttpParams }, pageSize: number] {
     let buildFilter = () : string => {
       return [this.number, this.date, this.provider]
