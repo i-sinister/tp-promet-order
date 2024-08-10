@@ -21,18 +21,21 @@
 		/// Returns all providers
 		/// </summary>
 		/// <param name="odataOptions"></param>
+		/// <param name="distinct">return distinct result</param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
-		[EnableQuery]
 		[HttpGet]
 		[Route("", Name = "provider_getAll")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProvidersListResponse))]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> Get(ODataQueryOptions<Provider> odataOptions, CancellationToken cancellationToken)
+		public async Task<IActionResult> Get(
+			ODataQueryOptions<Provider> odataOptions,
+			[FromQuery(Name = "$distinct")] bool? distinct,
+			CancellationToken cancellationToken)
 		{
 			var query = HttpContext.RequestServices.GetRequiredService<ProvidersQuery>();
 			var items = await query.Execute(cancellationToken);
-			var result = await items.Apply(odataOptions, cancellationToken);
+			var result = await items.Apply(odataOptions, distinct, cancellationToken);
 			return Ok(result);
 		}
 

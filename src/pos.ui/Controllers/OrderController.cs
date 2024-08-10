@@ -21,17 +21,21 @@ namespace Pos.UI.Controllers
 		/// Returns all orders
 		/// </summary>
 		/// <param name="odataOptions"></param>
+		/// <param name="distinct">return distinct result</param>
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		[HttpGet]
 		[Route("", Name = "orders_getAll")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrdersListResponse))]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> Get(ODataQueryOptions<OrderInfo> odataOptions, CancellationToken cancellationToken)
+		public async Task<IActionResult> Get(
+			ODataQueryOptions<OrderInfo> odataOptions,
+			[FromQuery(Name = "$distinct")] bool? distinct,
+			CancellationToken cancellationToken)
 		{
 			var query = HttpContext.RequestServices.GetRequiredService<OrdersQuery>();
 			var items = await query.Execute(cancellationToken);
-			var result = await items.Apply(odataOptions, cancellationToken);
+			var result = await items.Apply(odataOptions, distinct, cancellationToken);
 			return Ok(result);
 		}
 
