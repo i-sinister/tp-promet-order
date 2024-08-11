@@ -9,9 +9,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/pos.ui/bin/Debug/net8.0/pos.ui",
+      "program": "${workspaceFolder}/src/pos.api/bin/Debug/net8.0/pos.api",
       "args": [],
-      "cwd": "${workspaceFolder}/src/pos.ui",
+      "cwd": "${workspaceFolder}/src/pos.api",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
