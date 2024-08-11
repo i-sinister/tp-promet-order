@@ -1,14 +1,15 @@
 <div class="container row" [formGroup]="formOrder">
-  <div class="col-md-2">
-  </div>
+  <div class="col-md-2"></div>
   <div class="col-md-1">
     <label class="form-label">ID:</label>
-    <input type="text" readonly class="form-control" id="id" [value]="orderID">
+    <div class="input-group">
+      <div class="input-group-text">#</div>
+      <input type="text" readonly disabled class="form-control" id="id" [value]="orderID">
+    </div>
   </div>
   <div class="col-md-2">
     <label for="number" class="form-label">Number:</label>
-    <input type="text" id="number" class="form-control"
-     required formControlName="number">
+    <input type="text" id="number" class="form-control" formControlName="number">
   </div>
   <div class="col-md-2">
     <label for="date" id="date" class="form-label">Date:</label>
@@ -17,14 +18,33 @@
   </div>
   <div class="col-md-2">
     <label for="provider" class="form-label">Provider:</label>
-    <select id="provider" class="form-control" required formControlName="providerID">
+    <select id="provider" class="form-control" formControlName="providerID">
       <option *ngFor="let provider of providers" [value]="provider.id">{{provider.name}}</option>
     </select>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-3"></div>
+  <div class="col-md-2" *ngIf="isInvalidGroup(formOrder)"></div>
+  <div class="col-md-7" *ngIf="isInvalidGroup(formOrder)">
+    <div class="alert alert-danger">
+      <div *ngIf="isInvalid(number)">
+        <div *ngIf="number.errors?.['required']">Number is required.</div>
+        <div *ngIf="number.errors?.['minlength']">Number must be at least 1 characters long.</div>
+        <div *ngIf="number.errors?.['minlength']">Number can be at most 128 characters long.</div>
+        <div *ngIf="number.errors?.['pattern']">Number can consist of letter, numbers, space, hyphen or underscore</div>
+        <div *ngIf="number.errors?.['oneOf']">Number must not match items names</div>
+        <div *ngIf="number.errors?.['exists']">Number must be unique for the given provider</div>
+      </div>
+      <div *ngIf="isInvalid(date)">
+        <div *ngIf="date.errors?.['required']">Date is required.</div>
+      </div>
+      <div *ngIf="isInvalid(providerID)">
+        <div *ngIf="providerID.errors?.['required']">Provider is required</div>
+        <div *ngIf="providerID.errors?.['exists']">Provider #{{providerID.value}} does not exist</div>
+      </div>
+    </div>
   </div>
-  <div class="col-md-2">
-  </div>
+  <div class="col-md-3" *ngIf="isInvalidGroup(formOrder)"></div>
+  <div class="col-md-2"></div>
   <div class="col-7">
     <table class='table table-striped'>
       <thead>
@@ -37,8 +57,7 @@
         </tr>
         <tr [formGroup]="formItem">
           <td>
-            <input type="text" class="form-control" formControlName="name"
-              required minlength="1" maxlength="128" pattern="^[a-zA-Z0-9 \-_]+$">
+            <input type="text" class="form-control" formControlName="name" >
           </td>
           <td>
             <input type="number" class="form-control" formControlName="quantity"
@@ -53,6 +72,31 @@
               [disabled]="formItem.invalid" (click)="addItem()">
               <i class="bi bi-plus"></i>
             </button>
+          </td>
+        </tr>
+        <tr *ngIf="isInvalidGroup(formItem)">
+          <td colspan="4">
+            <div class="alert alert-danger">
+              <div *ngIf="isInvalid(itemName)">
+                <div *ngIf="itemName.errors?.['required']">Name is required.</div>
+                <div *ngIf="itemName.errors?.['minlength']">Name must be at least 1 characters long.</div>
+                <div *ngIf="itemName.errors?.['minlength']">Name can be at most 128 characters long.</div>
+                <div *ngIf="itemName.errors?.['pattern']">Name can consist of letter, numbers, space, hyphen or underscore</div>
+                <div *ngIf="itemName.errors?.['valuesMatch']">Name must not match order number</div>
+                <div *ngIf="itemName.errors?.['oneOf']">Name must be unique</div>
+              </div>
+              <div *ngIf="isInvalid(itemQuantity)">
+                <div *ngIf="itemQuantity.errors?.['required']">Quantity is required.</div>
+                <div *ngIf="itemQuantity.errors?.['min']">Quantity must be non negative integer</div>
+                <div *ngIf="itemQuantity.errors?.['max']">Quantity must be less then 10000</div>
+              </div>
+              <div *ngIf="isInvalid(itemUnit)">
+                <div *ngIf="itemUnit.errors?.['required']">Unit is required.</div>
+                <div *ngIf="itemUnit.errors?.['minlength']">Unit must be at least 1 characters long.</div>
+                <div *ngIf="itemUnit.errors?.['minlength']">Unit can be at most 128 characters long.</div>
+                <div *ngIf="itemUnit.errors?.['pattern']">Unit can consist of letter, numbers, space, hyphen or underscore</div>
+              </div>
+            </div>
           </td>
         </tr>
       </thead>
@@ -92,6 +136,5 @@
         </button>
     </div>
   </div>
-  <div class="col-md-3">
-  </div>
+  <div class="col-md-3"></div>
 </div>

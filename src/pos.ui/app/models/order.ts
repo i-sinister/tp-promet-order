@@ -51,4 +51,10 @@ export interface ProviderInfo {
 
 export interface ProviderListResponse {
   items: ProviderInfo[],
+  count: number | null
+}
+
+export interface ExistsResponse {
+  items: any[],
+  count: number
 }

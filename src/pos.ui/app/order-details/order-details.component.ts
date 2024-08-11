@@ -1,15 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { FormGroup, FormControl } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { FormGroup, FormControl, ValidatorFn, Validators, ValidationErrors, AbstractControl, AsyncValidator } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 
 import { EventsService } from '../events.service';
 import {
   CreateOrderRequest, UpdateOrderRequest, OrderDetails, OrderItem,
-  ProviderInfo, ProviderListResponse
+  ProviderInfo, ProviderListResponse, ExistsResponse
 } from '../models/order';
+import { Observable, catchError, first, map, of, tap } from 'rxjs';
 
 @Component({
   selector: '[pos-order-details]',
@@ -19,7 +20,13 @@ import {
 export class OrderDetailsComponent implements OnInit {
   public orderID: number;
   public formOrder: FormGroup;
+  public number: FormControl;
+  public date: FormControl;
+  public providerID: FormControl;
   public formItem: FormGroup;
+  public itemName: FormControl;
+  public itemQuantity: FormControl;
+  public itemUnit: FormControl;
   public items: OrderItem[];
   public is_loading: boolean = true;
   public providers: ProviderInfo[];
@@ -30,20 +37,46 @@ export class OrderDetailsComponent implements OnInit {
     private datepipe: DatePipe,
     @Inject('BASE_URL') private baseUrl: string,
     private router: Router,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    orderNumberUniqueValidator: OrderNumberIsUniqueValidator,
+    providerExistsValidator: ProviderExistsValidator
   ) {
-    this.orderID = parseInt(route.snapshot.paramMap.get('orderID') || '0');
-    this.formOrder = new FormGroup({
-      number: new FormControl(''),
-      date: new FormControl(datepipe.transform(moment().startOf('day').toDate(), 'yyyy-MM-dd')),
-      providerID: new FormControl('')
-    })
-    this.formItem = new FormGroup({
-      name: new FormControl(''),
-      quantity: new FormControl(''),
-      unit: new FormControl('')
-    })
     this.items = [];
+    this.orderID = parseInt(route.snapshot.paramMap.get('orderID') || '0');
+    orderNumberUniqueValidator.setOrderID(this.orderID);
+    this.number = new FormControl('', {
+      validators:[
+        Validators.required,
+        Validators.minLength(1),
+        Validators.maxLength(128),
+        Validators.pattern('^[a-zA-Z0-9 \-_]+$'),
+        oneOfValidator(this.items, item => item.name),
+      ],
+      asyncValidators: [
+        orderNumberUniqueValidator.validate.bind(orderNumberUniqueValidator),
+      ]
+    });
+    this.date = new FormControl(datepipe.transform(moment().startOf('day').toDate(), 'yyyy-MM-dd'));
+    this.providerID = new FormControl('', {
+      validators: [
+        Validators.required,
+      ],
+      asyncValidators: [
+        providerExistsValidator.validate.bind(providerExistsValidator)
+      ]
+    })
+    this.formOrder = new FormGroup({number: this.number, date: this.date, providerID: this.providerID, })
+    this.itemName = new FormControl('', [
+      Validators.required,
+      Validators.minLength(1),
+      Validators.maxLength(128),
+      Validators.pattern('^[a-zA-Z0-9 \-_]+$'),
+      valuesMatchValidator(this.number),
+      oneOfValidator(this.items, item => item.name),
+    ]);
+    this.itemQuantity = new FormControl('1'),
+    this.itemUnit = new FormControl('item')
+    this.formItem = new FormGroup({name: this.itemName, quantity: this.itemQuantity, unit: this.itemUnit});
     this.providers = [];
   }
 
@@ -142,6 +175,14 @@ export class OrderDetailsComponent implements OnInit {
       });
   }
 
+  public isInvalid(control: FormControl): boolean {
+    return control.invalid && (control.dirty || control.touched);
+  }
+
+  public isInvalidGroup(group: FormGroup): boolean {
+    return Object.values(group.controls).some(e => { return (e instanceof FormControl) && this.isInvalid(e as FormControl); });
+  }
+
   private createOrder(value: any) {
     let order: CreateOrderRequest = value;
     order.items = this.items;
@@ -177,5 +218,106 @@ export class OrderDetailsComponent implements OnInit {
           // TODO: handle validation errors
         }
       });
+  }
+}
+
+function str_cmp(first: any, second: any): boolean {
+    if (!first || !second || 'string' != typeof first || 'string' != typeof second) {
+      return false;
+    }
+
+    // `localCompare` does not work in firefox, so use toLowerCase comparison
+    return first.toLowerCase() == second.toLowerCase();
+}
+
+function oneOfValidator<T>(items: T[], projection: (item: T) => string): ValidatorFn {
+  return (control: AbstractControl<any, any>): ValidationErrors | null => {
+    return items.some(i => { return str_cmp(control.value, projection(i)); })
+      ? { oneOf: { value: control.value } }
+      : null;
+  };
+}
+
+function valuesMatchValidator(reference: FormControl): ValidatorFn {
+  return (control: AbstractControl<any, any>): ValidationErrors | null => {
+    return str_cmp(reference.value, control.value)
+      ? { valuesMatch: { value: control.value } }
+      : null;
+  };
+}
+
+class ExistsValidatorBase {
+  constructor(
+    private baseUrl: string,
+    private resource: string,
+    private events: EventsService,
+    private http: HttpClient
+  )
+  {
+  }
+
+  protected checkExists(filter: string, value: any): Observable<ValidationErrors | null>  {
+    let params = new HttpParams()
+      .set('$filter', filter)
+      .set('$top', 0)
+      .set('$count', true);
+    this.events.add(`checking ${this.resource} existence [${params.toString()}]`)
+    return this.http.get<ExistsResponse>(`${this.baseUrl}api/${this.resource}`, { params: params })
+      .pipe(
+        tap({
+          next: () => { this.events.add(`${this.resource} existence check completed`); },
+          error: () => { this.events.add(`${this.resource} existence check failed`); },
+        }),
+        map(response => 0 < response.count ? { exists: { value: value } } : null),
+        catchError(_ => of(null)),
+        first()
+      );
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class ProviderExistsValidator extends ExistsValidatorBase implements AsyncValidator {
+  constructor(
+    @Inject('BASE_URL') baseUrl: string,
+    events: EventsService,
+    http: HttpClient
+  )
+  {
+    super(baseUrl, 'providers', events, http);
+  }
+
+  validate(control: AbstractControl): Observable<ValidationErrors | null> {
+    let providerID = control.value;
+    let filter = `id eq ${providerID}`;
+    return super.checkExists(filter, providerID);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class OrderNumberIsUniqueValidator extends ExistsValidatorBase implements AsyncValidator {
+  private orderID: number = 0;
+  constructor(
+    @Inject('BASE_URL') baseUrl: string,
+    events: EventsService,
+    http: HttpClient
+  )
+  {
+    super(baseUrl, 'orders', events, http);
+  }
+
+  setOrderID(orderID: number) {
+    this.orderID = orderID;
+  }
+
+  validate(control: AbstractControl): Observable<ValidationErrors | null> {
+    let orderNumber = control.value;
+    let providerID = control.parent?.get('providerID')?.value;
+    if (!orderNumber || !providerID) {
+      return of(null);
+    }
+
+    let searchValue = orderNumber.replace("'", "''").toLowerCase();
+    let filter = `id ne ${this.orderID} and tolower(number) eq '${searchValue}' and providerID eq ${providerID}`;
+    return super.checkExists(filter, orderNumber);
   }
 }

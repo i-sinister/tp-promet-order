@@ -25,3 +25,8 @@ h1 { text-align: center; }
 table.table th button {
   float: right;
 }
+
+.form-control.ng-touched.ng-invalid,
+.form-control.ng-dirty.ng-invalid {
+  border-color: red;
+}
