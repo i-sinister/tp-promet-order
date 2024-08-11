@@ -251,7 +251,8 @@ class ExistsValidatorBase {
     private baseUrl: string,
     private resource: string,
     private events: EventsService,
-    private http: HttpClient
+    private http: HttpClient,
+    private existsIsAnError: boolean
   )
   {
   }
@@ -268,7 +269,7 @@ class ExistsValidatorBase {
           next: () => { this.events.add(`${this.resource} existence check completed`); },
           error: () => { this.events.add(`${this.resource} existence check failed`); },
         }),
-        map(response => 0 < response.count ? { exists: { value: value } } : null),
+        map(response => this.existsIsAnError === (0 < response.count) ? { exists: { value: value } } : null),
         catchError(_ => of(null)),
         first()
       );
@@ -283,7 +284,7 @@ export class ProviderExistsValidator extends ExistsValidatorBase implements Asyn
     http: HttpClient
   )
   {
-    super(baseUrl, 'providers', events, http);
+    super(baseUrl, 'providers', events, http, false);
   }
 
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
@@ -302,7 +303,7 @@ export class OrderNumberIsUniqueValidator extends ExistsValidatorBase implements
     http: HttpClient
   )
   {
-    super(baseUrl, 'orders', events, http);
+    super(baseUrl, 'orders', events, http, true);
   }
 
   setOrderID(orderID: number) {
